@@ -22,11 +22,11 @@
 
 ######@> Instalação de novos pacotes / bibliotecas [Instalação de
 ######@> Pacotes precisa se executada apenas uma vez]...
-install.packages(c("dplyr", "tidyr", "lubridate", "readxl", "ggplot2",
-                   "patchwork", "sf", "ggcorrplot", "ggmap", "leaflet",
-                   "Hmisc", "imputeTS", "stringr", "DataExplorer",
-                   "explore"),
-                 dependencies = TRUE)
+# install.packages(c("dplyr", "tidyr", "lubridate", "readxl", "ggplot2",
+#                    "patchwork", "sf", "ggcorrplot", "ggmap", "leaflet",
+#                    "Hmisc", "imputeTS", "stringr", "DataExplorer",
+#                    "explore"),
+#                  dependencies = TRUE)
 
 ######@> Carregando os pacotes para uso [Carregamento dos pacotes
 ######@> precisa ser feito sempre que quiser usar o mesmo]...
@@ -153,13 +153,23 @@ ggplot(data = dados, aes(x = Temp)) +
 c("Média" = mean(dados$pH), "Desvio padrão" = sd(dados$pH),
   quantile(dados$pH))
 
-ggplot(data = dados, aes(x = pH)) +
-  geom_histogram(binwidth = 0.5, boundary = 0.5, closed = "right",
-                fill = "white", colour = "black") +
-  geom_density(aes(y = after_stat(..density..) * nrow(dados) * 0.5),
-                colour = "blue", fill = "blue", alpha = 0.2) +
+####@> histograma
+ph_histplot <- ggplot(data = dados, aes(x = pH)) +
+  geom_histogram(binwidth = 0.5, fill = "white", colour = "black")+
   labs(x = "pH", y = "Frequência absoluta (n)") +
-  theme_gray(base_size = 14)
+  scale_x_continuous(breaks = seq(0, 10, 0.25)) +
+  scale_y_continuous(breaks = seq(0, 31, 5), expand = c(0), 
+                     limits = c(0, 31)) +
+  theme_gray(base_size = 12)
+
+####@> box plot
+ph_boxplot <- ggplot(data = dados) +
+    geom_boxplot(aes(x = pH), fill = "white", colour = "black") +
+    labs(x = "pH") +
+    theme_gray(base_size = 14)
+
+print(ph_histplot)
+print(ph_boxplot)
   
 #####@> Salinidade....
 
@@ -207,15 +217,12 @@ c("Média" = mean(dados$MO), "Desvio padrão" = sd(dados$MO),
   quantile(dados$MO))
 
 ggplot(data = dados, aes(x = MO)) +
-    geom_histogram(binwidth =  0.5, boundary = 0.5, closed = "right",
-                   fill = "white", colour = "black") +
-    geom_density(aes(y = after_stat(..density..) * nrow(dados) * 0.5),
-                 colour = "blue", fill = "blue", alpha = 0.2) +
-    scale_x_continuous(breaks = seq(0, 18, 3), expand = c(0, 0),
+    geom_histogram(binwidth =  1, fill = "white", colour = "black") +
+    scale_x_continuous(breaks = seq(0, 18), expand = c(0),
                        limits = c(0, 18)) +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, 10)) +
+    scale_y_continuous(expand = c(0), limits = c(0, 10)) +
     labs(x = "Matéria orgânica", y = "Frequência absoluta (n)") +
-    theme_gray(base_size = 14)
+    theme_gray(base_size = 12)
 
 #####@> Carbono
 
@@ -228,7 +235,7 @@ ggplot(data = dados, aes(x = Carb)) +
                    fill = "white", colour = "black") +
     geom_density(aes(y = after_stat(..density..) * nrow(dados) * 0.5),
                  colour = "blue", fill = "blue", alpha = 0.2) 
-    labs(x = "Matéria orgânica", y = "Frequência absoluta (n)") +
+    labs(x = "Carbono", y = "Frequência absoluta (n)") +
     theme_gray(base_size = 14)
 
 #####@> Cádmio
@@ -237,14 +244,83 @@ ggplot(data = dados, aes(x = Carb)) +
 c("Média" = mean(dados$Cd), "Desvio padrão" = sd(dados$Cd),
   quantile(dados$Cd))
 
-ggplot(data = dados, aes(x = Cd)) +
-    geom_histogram(binwidth =  0.5, boundary = 0.5, closed = "right",
-                   fill = "white", colour = "black") +
-    geom_density(aes(y = after_stat(..density..) * nrow(dados) * 0.5),
-                 colour = "blue", fill = "blue", alpha = 0.2) +
+cd_histplot <- ggplot(data = dados, aes(x = Cd)) +
+    geom_histogram(binwidth = 0.01, fill = "white", colour = "black") +
+    scale_x_continuous(breaks = seq(0.03, 0.35, 0.025), expand = c(0), limits = c(0, 0.35)) +
+    scale_y_continuous(breaks= waiver(), expand = c(0), limits = c(0, 10.5)) +
     labs(x = "Cádmio", y = "Frequência absoluta (n)") +
+    theme_gray(base_size = 10)
+
+cd_boxplot <- ggplot(data = dados) +
+    geom_boxplot(aes(x = Cd), fill = "white", colour = "black") +
+    labs(x = "Cd") +
     theme_gray(base_size = 14)
 
+print(cd_histplot)
+print(cd_boxplot)
+
+#####@> Zinco
+
+####@> média, desvio padrão e quantis da distribuição...
+c("Média" = mean(dados$Zn), "Desvio padrão" = sd(dados$Zn),
+  quantile(dados$Zn))
+
+zn_histplot <- ggplot(data = dados, aes(x = Zn)) +
+    geom_histogram(binwidth = 5, fill = "white", colour = "black") +
+    scale_x_continuous(breaks = seq(5, 210, 15), expand = c(0), limits = c(0, 210)) +
+    scale_y_continuous(breaks= waiver(), expand = c(0), limits = c(0, 8)) +
+    labs(x = "Zinco", y = "Frequência absoluta (n)") +
+    theme_gray(base_size = 14)
+
+zn_boxplot <- ggplot(data = dados) +
+    geom_boxplot(aes(x = Zn), fill = "white", colour = "black") +
+    labs(x = "Zn") +
+    theme_gray(base_size = 14)
+
+print(zn_histplot)
+print(zn_boxplot)
+
+#####@> Níquel
+
+####@> média, desvio padrão e quantis da distribuição...
+c("Média" = mean(dados$Ni), "Desvio padrão" = sd(dados$Ni),
+  quantile(dados$Ni))
+
+ni_histplot <- ggplot(data = dados, aes(x = Ni)) +
+    geom_histogram(binwidth = 2, fill = "white", colour = "black") +
+    scale_x_continuous(breaks = seq(5, 55, 5), expand = c(0), limits = c(0, 55)) +
+    scale_y_continuous(breaks= waiver(), expand = c(0), limits = c(0, 10)) +
+    labs(x = "Níquel", y = "Frequência absoluta (n)") +
+    theme_gray(base_size = 14)
+
+ni_boxplot <- ggplot(data = dados) +
+    geom_boxplot(aes(x = Ni), fill = "white", colour = "black") +
+    labs(x = "Ni") +
+    theme_gray(base_size = 14)
+
+print(ni_histplot)
+print(ni_boxplot)
+
+#####@> Cromo
+
+####@> média, desvio padrão e quantis da distribuição...
+c("Média" = mean(dados$Cr), "Desvio padrão" = sd(dados$Cr),
+  quantile(dados$Cr))
+
+cr_histplot <- ggplot(data = dados, aes(x = Cr)) +
+    geom_histogram(binwidth = 4, fill = "white", colour = "black") +
+    labs(x = "Cromo", y = "Frequência absoluta (n)") +
+    scale_x_continuous(breaks = seq(5, 140, 5), expand = c(0), limits = c(0, 140)) +
+    scale_y_continuous(breaks= waiver(), expand = c(0), limits = c(0, 7)) +
+    theme_gray(base_size = 14)
+
+cr_boxplot <- ggplot(data = dados) +
+    geom_boxplot(aes(x = Cr), fill = "white", colour = "black") +
+    labs(x = "Cr") +
+    theme_gray(base_size = 14)
+
+print(cr_histplot)
+print(cr_boxplot)
 
 ######@> Avaliando as variáveis físico-químicas em função de outras
 ######@> variáveis...
@@ -336,37 +412,37 @@ dados %>%
     describe() %>%
     as.data.frame()
 
-########################################################################
-##
-##                  Creative Commons License 4.0
-##                       (CC BY-NC-SA 4.0)
-##
-##  This is a humam-readable summary of (and not a substitute for) the
-##  license (https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode)
-##
-##  You are free to:
-##
-##  Share - copy and redistribute the material in any medium or format.
-##
-##  The licensor cannot revoke these freedoms as long as you follow the
-##  license terms.
-##
-##  Under the following terms:
-##
-##  Attribution - You must give appropriate credit, provide a link to
-##  license, and indicate if changes were made. You may do so in any
-##  reasonable manner, but not in any way that suggests the licensor
-##  endorses you or your use.
-##
-##  NonCommercial - You may not use the material for commercial
-##  purposes.
-##
-##  ShareAlike - If you remix, transform, or build upon the material,
-##  you must distributive your contributions under the same license
-##  as the  original.
-##
-##  No additional restrictions — You may not apply legal terms or
-##  technological measures that legally restrict others from doing
-##  anything the license permits.
-##
-########################################################################
+#######################################################################
+#
+#                  Creative Commons License 4.0
+#                       (CC BY-NC-SA 4.0)
+#
+#  This is a humam-readable summary of (and not a substitute for) the
+#  license (https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode)
+#
+#  You are free to:
+#
+#  Share - copy and redistribute the material in any medium or format.
+#
+#  The licensor cannot revoke these freedoms as long as you follow the
+#  license terms.
+#
+#  Under the following terms:
+#
+#  Attribution - You must give appropriate credit, provide a link to
+#  license, and indicate if changes were made. You may do so in any
+#  reasonable manner, but not in any way that suggests the licensor
+#  endorses you or your use.
+#
+#  NonCommercial - You may not use the material for commercial
+#  purposes.
+#
+#  ShareAlike - If you remix, transform, or build upon the material,
+#  you must distributive your contributions under the same license
+#  as the  original.
+#
+#  No additional restrictions — You may not apply legal terms or
+#  technological measures that legally restrict others from doing
+#  anything the license permits.
+#
+#######################################################################
