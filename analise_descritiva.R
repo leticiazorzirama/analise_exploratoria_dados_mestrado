@@ -50,7 +50,7 @@ library(explore)
 ######@> 02. Importando a base de dados...
 
 ######@> Base de dados...
-dados <- read_excel("analise_exploratoria_dados_mestrado/Rio_Itajai_Estuario_ver00.xlsx",
+dados <- read_excel("Rio_Itajai_Estuario_ver00.xlsx",
                     sheet = 1)
 
 ########################################################################
@@ -141,7 +141,7 @@ ggplot(data = dados, aes(x = Temp)) +
                        limits = c(16.5, 26.5)) +
     scale_y_continuous(expand = c(0, 0), limits = c(0, 30)) +
     labs(x = "Temperatura (ºC)", y = "Frequência absoluta (n)") +
-    theme_gray(base_size = 14)
+    theme_gray(base_size = 14) 
 
 ######@>----------------------------------------------------------------
 ######@> Repita o processo para as demais variáveis...
@@ -165,7 +165,7 @@ ph_histplot <- ggplot(data = dados, aes(x = pH)) +
     expand = c(0, 0), 
     limits = c(0, 30)) +
   labs(x = "pH", y = "Frequência absoluta (n)") +
-  theme_gray(base_size = 14)
+  theme_gray(base_size = 14) 
 
 ####@> box plot
 ph_boxplot <- ggplot(data = dados) +
@@ -187,8 +187,7 @@ c("Média" = mean(dados$Sal), "Desvio padrão" = sd(dados$Sal),
 
 ####@> histograma
 sal_histplot <- ggplot(data = dados, aes(x = Sal)) +
-  geom_histogram(binwidth = 2, boundary = 0,
-                 fill = "light blue", colour = "black", alpha = 0.6) +
+  geom_histogram(binwidth = 2, fill = "light blue", colour = "black", alpha = 0.6) +
   scale_x_continuous(
     breaks = seq(0, 36, 2), 
     expand = c(0, 0), 
@@ -197,8 +196,17 @@ sal_histplot <- ggplot(data = dados, aes(x = Sal)) +
     breaks = seq(0, 20, 5), 
     expand = c(0, 0),
     limits = c(0,20)) +
-  labs(x = "Salinidade", y = "Frequência absoluta (n)") +
-  theme_gray(base_size = 14) 
+  labs(
+    title = "Distribuição Salinidade - Estuário Rio Itajaí, SC", 
+    x = "Salinidade", 
+    y = "Frequência absoluta (n)") +
+  theme_gray(base_size = 14) +
+  theme(
+      plot.title = element_text(size = 30, hjust = 0.5),
+      axis.text.x = element_text(size = 16),
+      axis.text.y = element_text(size = 16 ),
+      axis.title.x = element_text(size = 18), 
+      axis.title.y = element_text(size = 18))
 
 ####@> box plot
 sal_boxplot <- ggplot(data = dados) +
@@ -445,7 +453,7 @@ print(mo_boxplot)
 # ######@> possibilidades...
 
 # ######@> Vamos brincar com um pacote que otimiza nosso trabalho...
-# explore(dados)
+explore(dados)
 
 # ######@> Podemos fazer um report completo da nossa base de dados...
 # dados %>% report(output_file = "report.html",
@@ -500,6 +508,20 @@ dados %>%
 # Salinidade
 summary(dados$Sal)
 print(sal_histplot)
+
+# Salinidade pela Draga
+sal_draga <- dados %>%
+  select(Sal, Draga) %>%
+  explore(target = Draga)
+
+print(sal_draga)
+
+# Salinidade pelo Local
+sal_local <- dados %>%
+  select(Sal, Local) %>%
+  explore(target = Local)
+
+print (sal_local)
 
 # Granulometria fina
 summary(dados$Fino)
