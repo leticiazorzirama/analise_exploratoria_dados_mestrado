@@ -523,7 +523,6 @@ fino_grosso_sal <- dados %>%
 
 print(fino_grosso_sal)
 
-#Teste
 #######################################################################
 #
 #                  Creative Commons License 4.0
